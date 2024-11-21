@@ -1,0 +1,21 @@
+{
+  "name": "components",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "storybook": "nx start-storybook --verbose",
+    "storybook:build": "nx build-storybook",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "@storybook/react-webpack5": "^8.4.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "webpack-bundle-analyzer": "^4.10.2"
+  }
+}

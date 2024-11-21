@@ -1,0 +1,230 @@
+openapi: 3.0.1
+info:
+  title: Shopping Cart API
+  description: API for managing product cart
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+tags:
+  - name: carts
+    description: the carts API
+paths:
+  /api/v1/carts/items:
+    post:
+      tags:
+        - carts
+      summary: Add a item to the shopping cart
+      operationId: addItemToCart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemInput"
+        required: true
+      parameters:
+        - name: username
+          in: header
+          description: unique value per user
+          required: true
+          type: string
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+        "404":
+          description: Item not found
+        "201":
+          description: Item added to cart successfully
+  /api/v1/carts/items/{itemId}:
+    delete:
+      tags:
+        - carts
+      summary: Remove a item from the shopping cart
+      operationId: removeItemFromCart
+      parameters:
+        - name: itemId
+          in: path
+          description: ID of the item to remove from the cart
+          required: true
+          schema:
+            type: string
+        - name: username
+          in: header
+          description: unique value per user
+          required: true
+          type: string
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+        "404":
+          description: Item not found
+        "204":
+          description: Item removed from cart successfully
+    patch:
+      tags:
+        - carts
+      summary: Update the item quantity from the shopping cart
+      operationId: editProduct
+      parameters:
+        - name: itemId
+          in: path
+          description: ID of the item to remove from the cart
+          required: true
+          schema:
+            type: string
+        - name: username
+          in: header
+          description: unique value per user
+          required: true
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EditCartItemInput"
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+        "404":
+          description: Cart or Item not found
+        "200":
+          description: Cart updated successfully
+          content:
+            '*/*':
+              schema:
+                type: integer
+                format: int32
+  /api/v1/carts:
+    get:
+      tags:
+        - carts
+      summary: Retrieve the shopping cart
+      operationId: getCart
+      parameters:
+        - name: username
+          in: header
+          description: unique value per user
+          required: true
+          type: string
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: object
+        "200":
+          description: Shopping cart retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CartResponse"
+    delete:
+      tags:
+        - carts
+      summary: Clear the shopping cart
+      operationId: clearCart
+      parameters:
+        - name: username
+          in: header
+          description: unique value per user
+          required: true
+          type: string
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: object
+        "204":
+          description: Shopping cart cleared successfully
+components:
+  schemas:
+    ItemInput:
+      type: object
+      properties:
+        itemId:
+          type: string
+    EditCartItemInput:
+      type: object
+      properties:
+        operation:
+          type: string
+          enum:
+            - INCREASE
+            - DECREASE
+    CartItemResponse:
+      type: object
+      properties:
+        itemId:
+          type: string
+        quantity:
+          type: integer
+          format: int32
+        price:
+          type: number
+        name:
+          type: string
+    CartResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartItemResponse"

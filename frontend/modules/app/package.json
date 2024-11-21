@@ -1,0 +1,14 @@
+{
+  "name": "celfocus-kickstarter-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Celfocus SWE",
+  "license": "MIT",
+  "dependencies": {
+    "next": "^14.2.15"
+  },
+  "devDependencies": {
+    "@nx/next": "20.0.0",
+    "eslint-config-next": "14.2.3"
+  }
+}

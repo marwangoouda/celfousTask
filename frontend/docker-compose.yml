@@ -1,0 +1,9 @@
+services:
+  playground-frontend:
+    networks:
+    - celfocus-network
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 4200:4200

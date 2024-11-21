@@ -1,0 +1,9 @@
+services:
+  playground-shopping-cart-api:
+    networks:
+    - celfocus-network
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080

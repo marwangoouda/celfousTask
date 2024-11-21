@@ -1,0 +1,9 @@
+networks:
+  celfocus-network:
+    name: celfocus-network
+    driver: bridge
+
+include:
+  - path: frontend/docker-compose.yml
+  - path: mocks/docker-compose.yml
+  - path: backend/docker-compose.yml
