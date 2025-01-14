@@ -181,7 +181,7 @@
           "quantity": 81
         }
       ],
-    "carts": [{
+    "carts": {
         "items": [
             {
                 "itemId": "SKUTEST1",
@@ -196,7 +196,7 @@
                 "name": "Mens Casual Premium Slim Fit T-Shirts"
             }
         ]
-    }],
+    },
     "items": [
             {
                 "itemId": "SKUTEST1",
