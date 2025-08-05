@@ -17,16 +17,19 @@ public class Product {
 
     private String imageUrl;
 
+    private int quantity;
+
     public Product() {
         super();
     }
 
-    public Product(String name, String sku, String description, BigDecimal price, String imageUrl) {
+    public Product(String name, String sku, String description, BigDecimal price, String imageUrl, int quantity) {
         this.name = name;
         this.sku = sku;
         this.description = description;
         this.price = price;
         this.imageUrl = imageUrl;
+        this.quantity = quantity;
     }
 
     public Product name(String name) {
@@ -92,6 +95,14 @@ public class Product {
 
     public void setimageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     @Override

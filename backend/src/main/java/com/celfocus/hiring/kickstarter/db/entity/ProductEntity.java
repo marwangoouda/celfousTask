@@ -1,14 +1,11 @@
 package com.celfocus.hiring.kickstarter.db.entity;
 
 import com.celfocus.hiring.kickstarter.domain.Product;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import org.hibernate.annotations.NaturalId;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
 public class ProductEntity extends Product implements Serializable {
@@ -54,5 +51,9 @@ public class ProductEntity extends Product implements Serializable {
     public void setimageUrl(String imageUrl) {
         super.setimageUrl(imageUrl);
     }
+
+    public int getQuantity() { return super.getQuantity();}
+
+    public void setQuantity(int quantity) { super.setQuantity(quantity);}
 }
 

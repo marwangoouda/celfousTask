@@ -17,6 +17,8 @@ public interface ProductRepository extends Repository<ProductEntity, String> {
 
     Optional<ProductEntity> findBySku(String sku);
 
+    ProductEntity save(ProductEntity productEntity);
+
     static ProductRepository create(ObjectMapper objectMapper) {
         return new ProductRepositoryImpl(objectMapper);
     }
@@ -40,5 +42,12 @@ class ProductRepositoryImpl implements ProductRepository {
         return products.stream()
                 .filter(product -> product.getSku().equals(sku))
                 .findFirst();
+    }
+
+    @Override
+    public ProductEntity save(ProductEntity productEntity) {
+        products.removeIf(p -> p.getSku().equals(productEntity.getSku()));
+        products.add(productEntity);
+        return productEntity;
     }
 }
