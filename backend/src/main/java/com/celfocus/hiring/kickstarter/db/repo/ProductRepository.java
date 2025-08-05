@@ -2,7 +2,6 @@ package com.celfocus.hiring.kickstarter.db.repo;
 
 
 import com.celfocus.hiring.kickstarter.db.entity.ProductEntity;
-import com.celfocus.hiring.kickstarter.domain.Product;
 import com.celfocus.hiring.kickstarter.util.ProductsLoader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
