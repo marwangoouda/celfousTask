@@ -55,3 +55,4 @@ public class ProductEntity extends Product implements Serializable {
         super.setimageUrl(imageUrl);
     }
 }
+
