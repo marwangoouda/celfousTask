@@ -17,19 +17,16 @@ public class Product {
 
     private String imageUrl;
 
-    private int quantity;
-
     public Product() {
         super();
     }
 
-    public Product(String name, String sku, String description, BigDecimal price, String imageUrl, int quantity) {
+    public Product(String name, String sku, String description, BigDecimal price, String imageUrl) {
         this.name = name;
         this.sku = sku;
         this.description = description;
         this.price = price;
         this.imageUrl = imageUrl;
-        this.quantity = quantity;
     }
 
     public Product name(String name) {
@@ -97,14 +94,6 @@ public class Product {
         this.imageUrl = imageUrl;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -118,4 +107,3 @@ public class Product {
         return Objects.hash(sku);
     }
 }
-
