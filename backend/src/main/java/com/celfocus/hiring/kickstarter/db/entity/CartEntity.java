@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.NaturalId;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -33,7 +34,18 @@ public class CartEntity extends Cart<CartItemEntity> implements Serializable {
         return super.getItems();
     }
 
+    @Column(name = "LAST_MODIFIED_DATE")
+    @Override
+    public LocalDateTime getLastModifiedDate() {
+        return super.getLastModifiedDate();
+    }
+
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @Override
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+        super.setLastModifiedDate(lastModifiedDate);
     }
 }
