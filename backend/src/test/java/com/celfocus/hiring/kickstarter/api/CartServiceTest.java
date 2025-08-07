@@ -23,8 +23,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CartServiceTest {
@@ -68,7 +67,7 @@ public class CartServiceTest {
 
         cartService.addItemToCart("testuser", cartItemInput);
 
-        verify(cartRepository).save(any(CartEntity.class));
+        verify(cartRepository, times(2)).save(any(CartEntity.class));
         verify(cartItemRepository).save(any(CartItemEntity.class));
         verify(productRepository).save(any(ProductEntity.class));
     }
