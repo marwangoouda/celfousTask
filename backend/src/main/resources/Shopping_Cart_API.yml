@@ -61,7 +61,7 @@ paths:
             example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       responses:
         '200':
-          description: Token is valid
+          description:
         '401':
           description: Token missing or invalid
 
@@ -286,6 +286,9 @@ components:
         token:
           type: string
           description: JWT to be used in Authorization Bearer <token>`
+        username:
+          type: string
+          description: username of the authenticated user`
 
     ItemInput:
       type: object

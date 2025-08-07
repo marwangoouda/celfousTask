@@ -64,7 +64,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(InvalidCredsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public @ResponseBody ExceptionErrorDTO handleCartNotFoundException(InvalidCredsException ex) {
+    public @ResponseBody ExceptionErrorDTO handleInvalidCredsException(InvalidCredsException ex) {
         log.warn("Invalid Creds Exception Thrown: {}", ex.getMessage());
         return new ExceptionErrorDTO(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
     }
