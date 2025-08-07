@@ -15,9 +15,13 @@ import com.celfocus.hiring.kickstarter.exception.CartNotFoundException;
 import com.celfocus.hiring.kickstarter.exception.InsufficientStockException;
 import com.celfocus.hiring.kickstarter.exception.ItemNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -36,12 +40,16 @@ public class CartService {
         this.productRepository = productRepository;
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "carts",    key = "#username"),
+            @CacheEvict(value = "products", key = "#itemInput.itemId()")})
     public void addItemToCart(String username, CartItemInput itemInput) {
         log.info("Adding a cartItem for user={}, itemId={}", username, itemInput.itemId());
         var cart = cartRepository.findByUserId(username).orElseGet(() -> {
             log.info("No existing cart for user={}, creating new cart", username);
             var newCart = new CartEntity();
             newCart.setUserId(username);
+            newCart.setLastModifiedDate(LocalDateTime.now());
             CartEntity savedCartEntity = cartRepository.save(newCart);
             log.info("Created cart id={} for user={}", savedCartEntity.getId(), username);
             return savedCartEntity;
@@ -58,6 +66,8 @@ public class CartService {
                             addNewItemToCart(itemInput, cart);
                         }
                 );
+        cart.setLastModifiedDate(LocalDateTime.now());
+        cartRepository.save(cart);
     }
 
     private void addNewItemToCart(CartItemInput itemInput, CartEntity cart) {
@@ -124,6 +134,9 @@ public class CartService {
         log.debug("Reduced stock for sku {} to {} after update", item.getItemId(), product.getQuantity());
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "carts",    key = "#username"),
+            @CacheEvict(value = "products", allEntries = true)})
     public void clearCart(String username) {
         log.info("Clearing cart for user={}", username);
         cartRepository.findByUserId(username).ifPresentOrElse(
@@ -146,6 +159,7 @@ public class CartService {
         );
     }
 
+    @Cacheable(value = "carts", key = "#username")
     public Cart<? extends CartItem> getCart(String username) {
         log.info("Fetching cart for user={}", username);
         Cart<? extends CartItem> result = cartRepository.findByUserId(username)
@@ -158,6 +172,9 @@ public class CartService {
         return result;
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "carts",    key = "#username"),
+            @CacheEvict(value = "products", key = "#itemId")})
     public void removeItemFromCart(String username, String itemId) {
         log.info("Removing item from cart for user={}, itemId={}", username, itemId);
         cartRepository.findByUserId(username)
@@ -167,6 +184,8 @@ public class CartService {
                             if (cartItemOptional.isPresent()) {
                                 CartItemEntity cartItem = cartItemOptional.get();
                                 cartItemRepository.deleteById(new CartItemPK(itemId, cart.getId()));
+                                cart.setLastModifiedDate(LocalDateTime.now());
+                                cartRepository.save(cart);
                                 log.info("Removed cartItem itemId={} from cart id={}", itemId, cart.getId());
 
                                 productRepository.findBySku(itemId).ifPresent(product -> {

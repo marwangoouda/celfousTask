@@ -6,6 +6,7 @@ import com.celfocus.hiring.kickstarter.db.repo.ProductRepository;
 import com.celfocus.hiring.kickstarter.domain.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,7 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
+    @Cacheable(value = "products", key = "'ALL_PRODUCTS'")
     public List<? extends Product> getProducts() {
         log.info("Fetching all products");
         List<? extends Product> products = productRepository.findAll();
@@ -28,6 +30,7 @@ public class ProductService {
         return products;
     }
 
+    @Cacheable(value = "products", key = "#sku")
     public Optional<? extends Product> getProduct(String sku) {
         log.info("Fetching product with SKU={}", sku);
         Optional<? extends Product> productOptional = productRepository.findBySku(sku);
