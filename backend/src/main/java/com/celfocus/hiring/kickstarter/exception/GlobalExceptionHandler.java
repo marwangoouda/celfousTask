@@ -1,5 +1,8 @@
 package com.celfocus.hiring.kickstarter.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -51,6 +54,47 @@ public class GlobalExceptionHandler {
     public @ResponseBody ExceptionErrorDTO handleCartNotFoundException(CartNotFoundException ex) {
         log.warn("Cart not found Exception Thrown: {}", ex.getMessage());
         return new ExceptionErrorDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+    }
+
+    /**
+     * Handles InvalidCredsException and returns a 404 Not Found response.
+     *
+     * @param ex the exception to handle
+     * @return a response entity with the error details
+     */
+    @ExceptionHandler(InvalidCredsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public @ResponseBody ExceptionErrorDTO handleCartNotFoundException(InvalidCredsException ex) {
+        log.warn("Invalid Creds Exception Thrown: {}", ex.getMessage());
+        return new ExceptionErrorDTO(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+    }
+
+    /**
+     * Handles ExpiredJwtException and returns a 401 Unauthorized response.
+     *
+     * @param ex the exception to handle
+     * @param req the HTTP request
+     * @return a response entity with the error details
+     */
+    @ExceptionHandler(ExpiredJwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public @ResponseBody ExceptionErrorDTO handleJwtExpired(ExpiredJwtException ex, HttpServletRequest req) {
+        log.warn("Expired JWT for [{}]: {}", req.getRequestURI(), ex.getMessage());
+        return new ExceptionErrorDTO(HttpStatus.UNAUTHORIZED.value(), "Session expired. Please log in again.");
+    }
+
+    /**
+     * Handles JwtException and returns a 401 Unauthorized response.
+     *
+     * @param ex the exception to handle
+     * @param req the HTTP request
+     * @return a response entity with the error details
+     */
+    @ExceptionHandler(JwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public @ResponseBody ExceptionErrorDTO handleJwtInvalid(Exception ex, HttpServletRequest req) {
+        log.warn("Invalid JWT for [{}]: {}", req.getRequestURI(), ex.getMessage());
+        return new ExceptionErrorDTO(HttpStatus.UNAUTHORIZED.value(), "Invalid authentication token.");
     }
 
     /**
