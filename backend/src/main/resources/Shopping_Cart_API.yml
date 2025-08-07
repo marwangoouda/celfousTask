@@ -3,53 +3,110 @@ info:
   title: Shopping Cart API
   description: API for managing product cart
   version: 1.0.0
+
 servers:
   - url: http://localhost:8080
     description: Generated server url
+
 tags:
   - name: carts
     description: the carts API
+  - name: auth
+    description: authentication endpoints
+
+# Enforce bearer token on all operations by default
+security:
+  - bearerAuth: []
+
 paths:
+
+  # Public login endpoint (no token required)
+  /api/v1/auth/login:
+    post:
+      tags:
+        - auth
+      summary: Obtain JWT by logging in
+      operationId: loginUser
+      security: []                            # override global: no token needed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: JWT issued successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+
+  # Protected validate endpoint (must supply Authorization header)
+  /api/v1/auth/validate:
+    get:
+      tags:
+        - auth
+      summary: Validate a JWT
+      operationId: validateToken
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer token to validate
+          required: true
+          schema:
+            type: string
+            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      responses:
+        '200':
+          description: Token is valid
+        '401':
+          description: Token missing or invalid
+
   /api/v1/carts/items:
     post:
       tags:
         - carts
-      summary: Add a item to the shopping cart
+      summary: Add an item to the shopping cart
       operationId: addItemToCart
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/ItemInput"
-        required: true
       parameters:
         - name: username
           in: header
           description: unique value per user
           required: true
-          type: string
+          schema:
+            type: string
       responses:
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                type: object
+        "201":
+          description: Item added to cart successfully
+        "404":
+          description: Item not found
         "409":
           description: Conflict
           content:
             '*/*':
               schema:
                 type: object
-        "404":
-          description: Item not found
-        "201":
-          description: Item added to cart successfully
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+
   /api/v1/carts/items/{itemId}:
     delete:
       tags:
         - carts
-      summary: Remove a item from the shopping cart
+      summary: Remove an item from the shopping cart
       operationId: removeItemFromCart
       parameters:
         - name: itemId
@@ -62,33 +119,35 @@ paths:
           in: header
           description: unique value per user
           required: true
-          type: string
+          schema:
+            type: string
       responses:
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                type: object
+        "204":
+          description: Item removed from cart successfully
+        "404":
+          description: Item not found
         "409":
           description: Conflict
           content:
             '*/*':
               schema:
                 type: object
-        "404":
-          description: Item not found
-        "204":
-          description: Item removed from cart successfully
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+
     patch:
       tags:
         - carts
-      summary: Update the item quantity from the shopping cart
-      operationId: editProduct
+      summary: Update item quantity in the shopping cart
+      operationId: editCartItem
       parameters:
         - name: itemId
           in: path
-          description: ID of the item to remove from the cart
+          description: ID of the item to edit in the cart
           required: true
           schema:
             type: string
@@ -96,28 +155,15 @@ paths:
           in: header
           description: unique value per user
           required: true
-          type: string
+          schema:
+            type: string
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/EditCartItemInput"
-        required: true
       responses:
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                type: object
-        "409":
-          description: Conflict
-          content:
-            '*/*':
-              schema:
-                type: object
-        "404":
-          description: Cart or Item not found
         "200":
           description: Cart updated successfully
           content:
@@ -125,6 +171,21 @@ paths:
               schema:
                 type: integer
                 format: int32
+        "404":
+          description: Cart or Item not found
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+
   /api/v1/carts:
     get:
       tags:
@@ -136,10 +197,17 @@ paths:
           in: header
           description: unique value per user
           required: true
-          type: string
+          schema:
+            type: string
       responses:
-        "500":
-          description: Internal Server Error
+        "200":
+          description: Shopping cart retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CartResponse"
+        "404":
+          description: Not Found
           content:
             '*/*':
               schema:
@@ -150,18 +218,13 @@ paths:
             '*/*':
               schema:
                 type: object
-        "404":
-          description: Not Found
+        "500":
+          description: Internal Server Error
           content:
             '*/*':
               schema:
                 type: object
-        "200":
-          description: Shopping cart retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CartResponse"
+
     delete:
       tags:
         - carts
@@ -172,10 +235,13 @@ paths:
           in: header
           description: unique value per user
           required: true
-          type: string
+          schema:
+            type: string
       responses:
-        "500":
-          description: Internal Server Error
+        "204":
+          description: Shopping cart cleared successfully
+        "404":
+          description: Not Found
           content:
             '*/*':
               schema:
@@ -186,21 +252,47 @@ paths:
             '*/*':
               schema:
                 type: object
-        "404":
-          description: Not Found
+        "500":
+          description: Internal Server Error
           content:
             '*/*':
               schema:
                 type: object
-        "204":
-          description: Shopping cart cleared successfully
+
 components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT to be used in Authorization Bearer <token>`
+
     ItemInput:
       type: object
       properties:
         itemId:
           type: string
+
     EditCartItemInput:
       type: object
       properties:
@@ -209,6 +301,7 @@ components:
           enum:
             - INCREASE
             - DECREASE
+
     CartItemResponse:
       type: object
       properties:
@@ -221,6 +314,7 @@ components:
           type: number
         name:
           type: string
+
     CartResponse:
       type: object
       properties:
